@@ -1,5 +1,6 @@
 ﻿using Backend.Models;
 using Backend.Models.Request;
+using Backend.Models.Response;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,16 +18,30 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<UserResponse>> GetUsers()
         {
-            return await usersService.FindMany();
+            IEnumerable<User> users = await usersService.FindMany();
+            return users.Select(user => new UserResponse
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Role = user.Role,
+            });
         }
 
 
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(CreateUserRequest payload)
+        public async Task<ActionResult<UserResponse>> PostUser(CreateUserRequest payload)
         {
-            return await usersService.Create(payload);
+            User user = await usersService.Create(payload);
+            return new UserResponse
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Role = user.Role,
+            };
 
         }
 
